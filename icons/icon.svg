@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Original app icon: the header compass-hex emblem on a deep sea. Full bleed; the emblem sits in the maskable safe zone when scaled down. -->
+  <defs>
+    <radialGradient id="sea" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#14868f"/><stop offset=".6" stop-color="#0b6d76"/><stop offset="1" stop-color="#063d44"/>
+    </radialGradient>
+    <symbol id="emblem" viewBox="0 0 40 40">
+      <polygon points="20,1.5 36,10.75 36,29.25 20,38.5 4,29.25 4,10.75" fill="#f3e9d6" stroke="#e2b33b" stroke-width="2.2"/>
+      <polygon points="20,6 32.1,13 32.1,27 20,34 7.9,27 7.9,13" fill="none" stroke="#5a3d24" stroke-width=".9" stroke-dasharray="2 1.6"/>
+      <path d="M20 20 L9 9 M20 20 L31 9 M20 20 L9 31 M20 20 L31 31" stroke="#5a3d24" stroke-width=".9" opacity=".55"/>
+      <path d="M6 20 L20 17.2 L20 22.8Z" fill="#0b6d76"/><path d="M34 20 L20 17.2 L20 22.8Z" fill="#08525a"/>
+      <path d="M20 4 L17.2 20 L22.8 20Z" fill="#a85a2c"/><path d="M20 4 L22.8 20 L20 20Z" fill="#6e3518"/>
+      <path d="M20 36 L17.2 20 L22.8 20Z" fill="#3b2a1c"/><path d="M20 36 L22.8 20 L20 20Z" fill="#5a3d24"/>
+      <circle cx="20" cy="20" r="3" fill="#e2b33b" stroke="#3b2a1c" stroke-width="1"/>
+    </symbol>
+  </defs>
+  <rect width="512" height="512" fill="url(#sea)"/>
+  <g fill="none" stroke="#7fc6c2" stroke-width="7" stroke-linecap="round" opacity=".28">
+    <path d="M-10 92 q32 -20 64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0"/>
+    <path d="M-42 432 q32 -20 64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0"/>
+  </g>
+  <circle cx="256" cy="256" r="196" fill="none" stroke="#e2b33b" stroke-width="4" stroke-dasharray="3 13" opacity=".55"/>
+  <use href="#emblem" x="72" y="72" width="368" height="368"/>
+</svg>
