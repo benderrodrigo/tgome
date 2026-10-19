@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
 <link rel="icon" href="icons/favicon.ico" sizes="any">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -15,6 +16,7 @@
 <title>The Guild of Merchant Explorers</title>
 <style>
 :root{
+  color-scheme:only light;
   --bg:#2a221c; --panel:#f3ead8; --panel2:#e8dcc3; --ink:#2b2017; --muted:#6d5c4a;
   --p0:#159aa6; --p1:#e0a91c; --p2:#c2185b; --p3:#5b3fb0; --accent:#8b4a24; --zoom:1;
 }
@@ -405,7 +407,8 @@ body.landing #modal.docked .box{max-width:560px;height:auto;max-height:90dvh;bor
 #modal .st tr.tot td{font-weight:700;border-bottom:0}
 .st .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
 .st-spark svg,svg.st-bars{display:block;width:100%;height:auto}
-svg.st-bars text{font-size:12px;fill:#3b2a1c}
+svg.st-bars{color:var(--ink)}
+svg.st-bars text{font-size:12px;fill:currentColor}
 svg.st-bars text.v{font-weight:700;font-variant-numeric:tabular-nums}
 .st-cap{font-size:11.5px;color:var(--muted);margin:3px 0 0}
 .st-cap i{display:inline-block;width:9px;height:9px;border-radius:2px;margin:0 3px -1px 0}
@@ -684,8 +687,12 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
 <script>
 'use strict';
 /* Build version and change history, newest first. Bump APP_VERSION and add a CHANGELOG entry with every build. */
-const APP_VERSION = '1.0';
+const APP_VERSION = '1.1';
 const CHANGELOG = [
+  {v: '1.1', date: '2026-10-20', items: [
+    'Statistics: category chart stays readable when a phone browser forces dark mode, and the popup has a close button in the corner.',
+    'Removed the map picker from the game panel, so a misclick can no longer start a new game on another map (choose maps from New game).',
+    'Quick rules during a game no longer shows the version and What\'s new link (still on the home screen and in the Guild ledger menu).']},
   {v: '1.0', date: '2026-10-19', items: [
     'First complete release: all four maps (Avenia, Aghon, Kazan, Cnidaria), 1 to 4 players, AI difficulty, solo mode, statistics, sound and animations, and an installable offline app.']},
   {v: '0.19', date: '2026-10-19', items: [
@@ -3313,7 +3320,7 @@ function toggleDock() {
   syncDock();
 }
 function showModal(html, kind) {
-  modalKind = kind; modalClosable = /data-act="close"/.test(html);
+  modalKind = kind; modalClosable = /data-(act|st)="close"/.test(html);
   $('modalBox').innerHTML = `<div class="mhead">${dockHead()}</div>` + html; $('modal').classList.add('show'); syncDock();
 }
 function hideModal() { modalKind = null; ruinPend = null; $('modal').classList.remove('show'); syncDock(); }
@@ -3456,12 +3463,12 @@ function showRules() {
   <li><b>Era cards</b> give investigate cards. Explorers are cleared at the end of each era, but villages, towers and trading posts stay.</li>
   <li>Goals pay 10 to the first player(s) and 5 afterwards. After 4 eras the most coins wins (tie-break: towers, then villages).</li>
   <li><b>Solo</b> (1 player): solo era tokens cover goal spots the first time the II, III and I/II/III era cards are revealed. Win by completing all 3 goals and reaching 90 / 120 / 150 coins (Easy / Normal / Hard).</li>
-  <li><b>${MAPDEF.name}:</b> ${MAPDEF.notes} Choose the map from New game (or the map list under the panel).</li>
+  <li><b>${MAPDEF.name}:</b> ${MAPDEF.notes} Choose the map from New game.</li>
   </ul>
   <div class="row" style="margin-bottom:8px"><button data-act="maprules">What's different on ${MAPDEF.name}</button></div>
   ${ruinWarnOn() ? '' : '<div class="row" style="margin-bottom:8px"><button data-act="ruinwarn-on">Turn the "can\'t undo" ruin warning back on</button></div>'}
   <p>Tips: Undo works until you reveal hidden information (treasure). Legal ruin spaces that would draw treasure show a gold lock. Use + / - or pinch to zoom on phones. Add <code>?debug</code> to the URL to show hex coordinates, <code>?edit</code> to fix the map, <code>?test</code> to run rule tests.</p>
-  <p class="tnote">Version v${esc(APP_VERSION)} &middot; <button class="lnk" data-act="changelog">What's new</button></p>
+  ${$('landing').hidden ? '' : `<p class="tnote">Version v${esc(APP_VERSION)} &middot; <button class="lnk" data-act="changelog">What's new</button></p>`}
   <button class="primary" data-act="close">Close</button>`, 'rules');
 }
 function showChangelog() {
@@ -4603,7 +4610,7 @@ function init() {
   addEventListener('resize', () => { if (brandOpen) setBrandMenu(false); });
   $('btnRules').addEventListener('click', showRules);
   wirePanelGrip(); syncPanelMin();
-  const sel = $('mapSel'); sel.value = MAP_ID;
+  const sel = $('mapSel'); sel.value = MAP_ID; sel.hidden = !EDIT;
   sel.addEventListener('change', () => {
     if (!EDIT && S && S.phase !== 'over' && S.turnNo > 1 && !confirm(`Start a new game on ${MAPS[sel.value].name}?`)) { sel.value = MAP_ID; return; }
     setMap(sel.value);
@@ -4632,7 +4639,7 @@ function init() {
     else if (b.dataset.act === 'new') showLanding('setup');
     else if (b.dataset.act === 'maprules') showMapRules();
     else if (b.dataset.act === 'changelog') showChangelog();
-    else if (b.dataset.act === 'close') { const was = modalKind; hideModal(); if (was === 'over') modalKind = 'closed-over'; if ((was === 'coins' || was === 'maprules' || was === 'journal') && S.phase === 'over') modalKind = 'closed-over'; if (was === 'treasure' || was === 'eracards' || was === 'coins' || was === 'maprules' || was === 'journal') render(); }
+    else if (b.dataset.act === 'close') { const was = modalKind; hideModal(); if (was === 'over') modalKind = 'closed-over'; if ((was === 'coins' || was === 'maprules' || was === 'journal' || was === 'stats') && S && S.phase === 'over') modalKind = 'closed-over'; if (was === 'treasure' || was === 'eracards' || was === 'coins' || was === 'maprules' || was === 'journal') render(); }
   });
   for (const id of ['intelBar', 'panel']) $(id).addEventListener('click', onIntelClick);
   for (const id of ['status', 'panel']) $(id).addEventListener('click', e => {
