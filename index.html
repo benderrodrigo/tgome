@@ -684,8 +684,10 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
 <script>
 'use strict';
 /* Build version and change history, newest first. Bump APP_VERSION and add a CHANGELOG entry with every build. */
-const APP_VERSION = '0.19';
+const APP_VERSION = '1.0';
 const CHANGELOG = [
+  {v: '1.0', date: '2026-10-19', items: [
+    'First complete release: all four maps (Avenia, Aghon, Kazan, Cnidaria), 1 to 4 players, AI difficulty, solo mode, statistics, sound and animations, and an installable offline app.']},
   {v: '0.19', date: '2026-10-19', items: [
     '1 to 4 seats: pass and play with a handoff cover between humans, and peeking at every player\'s map.',
     'AI difficulty per seat: Easy, Normal (the original AI) and Hard.',
@@ -2303,7 +2305,8 @@ function runTests() {
   const pp = normSetup({seats: [{name: 'You', type: 'human'}, {name: 'AI', type: 'human'}, {name: 'AI', type: 'ai', level: 'easy'}]});
   ok(old.mode === 'vs' && old.seats.length === 2 && old.seats[1].level === 'normal' && old.seats[0].name === 'Ana' && dflt.seats.map(s => s.name + ':' + s.type).join() === 'You:human,AI:ai' && dflt.seats[1].level === 'normal'
      && pp.mode === 'pass' && pp.seats.map(s => s.name).join() === 'Player 1,Player 2,AI', 'saved v1 setups become 1 human vs 1 Normal AI; default seat names follow the seat mix');
-  ok(CHANGELOG[0].v === APP_VERSION && CHANGELOG.every((r, i) => r.items.length && (!i || parseFloat(r.v.split('.')[1]) < parseFloat(CHANGELOG[i - 1].v.split('.')[1]))), 'changelog starts at the current version and runs newest first');
+  const vNum = v => v.split('.').map(Number), vLess = (a, b) => { const x = vNum(a), y = vNum(b); return x[0] < y[0] || (x[0] === y[0] && (x[1] || 0) < (y[1] || 0)); };
+  ok(CHANGELOG[0].v === APP_VERSION && CHANGELOG.every((r, i) => r.items.length && (!i || vLess(r.v, CHANGELOG[i - 1].v))), 'changelog starts at the current version and runs newest first');
   ok(normSetup({seats: [{name: '   '}]}).seats[0].name === 'You' && esc('<b a="1">&\'') === '&lt;b a=&quot;1&quot;&gt;&amp;&#39;', 'blank names fall back to You and names are escaped');
   const G = newGame(77, {seats: [{name: 'Ana', type: 'human'}, {name: 'AI', type: 'ai'}]});
   ok(G.players[0].name === 'Ana' && !G.players[0].ai && G.players[1].ai && G.seats.length === 2, 'new game takes names from the setup seats');
