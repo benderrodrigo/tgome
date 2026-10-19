@@ -599,6 +599,46 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
 .fxset input[type=checkbox]{width:22px;height:22px;margin:0}
 .fxset input[type=range]{flex:1;min-width:0;min-height:32px;accent-color:var(--accent)}
 .fxset .fxrow.dim{opacity:.5}
+/* How to play tour: a dimmed screen with a spotlight hole over the real UI, and a caption card that never covers it */
+#tut{position:fixed;inset:0;z-index:36;pointer-events:none}
+#tut[hidden]{display:none}
+#tut .tut-dim{position:absolute;left:0;top:0;width:100%;height:100%}
+#tut .tut-dim path{fill:rgba(20,14,8,.64);fill-rule:evenodd;pointer-events:auto}
+#tut .tut-catch{position:absolute;inset:0;display:none;pointer-events:auto}
+#tut.still .tut-catch{display:block}
+#tut .tut-ring{position:absolute;border:3px solid #e2b33b;border-radius:12px;pointer-events:none;box-shadow:0 0 0 2px rgba(43,32,23,.7),0 0 16px rgba(226,179,59,.55);animation:tutRing 1.6s ease-in-out infinite}
+#tut .tut-ring[hidden]{display:none}
+@keyframes tutRing{50%{box-shadow:0 0 0 2px rgba(43,32,23,.7),0 0 30px rgba(226,179,59,.95)}}
+.tut-card{position:absolute;left:8px;top:8px;width:min(380px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto;pointer-events:auto;
+  background:var(--panel);color:var(--ink);border:2px solid #b89c72;border-radius:14px;padding:6px 14px 12px;box-shadow:0 12px 36px rgba(0,0,0,.55);font-size:14.5px;line-height:1.45}
+.tut-card.in{animation:tutIn .25s ease-out both}
+@keyframes tutIn{from{opacity:0;transform:translateY(8px)}}
+.tut-top{display:flex;align-items:center;gap:8px;margin-right:-8px}
+.tut-k{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#8a5a2b;font-weight:700;white-space:nowrap}
+.tut-dots{display:flex;gap:5px;margin-left:auto}
+.tut-dots i{width:8px;height:8px;border-radius:50%;background:#d6c5a3}
+.tut-dots i.done{background:#c49a6c} .tut-dots i.on{background:var(--accent);box-shadow:0 0 0 2px rgba(139,74,36,.25)}
+.tut-card .tut-x{min-height:36px;min-width:36px;padding:0 8px;font-size:22px;line-height:1;font-weight:700;background:#e8dcc3;border-color:#b89c72}
+.tut-card h2{margin:2px 0 2px;font:700 18px/1.25 Georgia,"Times New Roman",serif;color:#3b2a1c}
+.tut-part{font-size:12px;color:var(--muted);margin-bottom:2px}
+.tut-body p{margin:5px 0}
+.tut-body .cico{margin:0 7px 0 0}
+.tut-body .cico.cmod{float:left;margin:2px 10px 4px 0}
+.tut-body::after{content:"";display:block;clear:both}
+.tut-i{display:inline-block;width:18px;height:18px;vertical-align:-4px;margin:0 2px 0 1px}
+.tut-tip{padding:5px 9px;border-radius:8px;background:#fff3df;border-left:3px solid #e2b33b;font-size:13.5px}
+.tut-nav{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.tut-nav .sp{flex:1}
+.tut-card .tut-nav button{min-height:44px}
+.tut-card .tut-skip{background:none;border:0;color:var(--muted);text-decoration:underline;text-underline-offset:2px;padding:6px 4px;box-shadow:none}
+.tut-end .tut-nav{flex-direction:column;align-items:stretch}
+.tut-card :focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
+body.tut #toast{z-index:38}
+body.tutshot #panelBody{transition:none}
+@media (max-width:420px),(max-height:640px){.tut-card{font-size:14px;padding:4px 12px 10px}.tut-card h2{font-size:17px}.tut-nav{margin-top:6px}}
+@media (prefers-reduced-motion:reduce){#tut .tut-ring,.tut-card.in{animation:none}}
+.l-hint{margin:-2px 0 0;text-align:center;font-size:12.5px;color:var(--muted)}
+.l-menu .l-hint button{display:inline;min-height:0;padding:0 2px;border:0;background:none;box-shadow:none;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -607,6 +647,7 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
   <div class="bmh" aria-hidden="true">Guild ledger</div>
   <button role="menuitem" class="primary" data-bm="new"><i aria-hidden="true">&#10010;</i>New game</button>
   <button role="menuitem" data-bm="rules"><i aria-hidden="true">&#9776;</i>Rules</button>
+  <button role="menuitem" data-bm="tutorial"><i aria-hidden="true">?</i>How to play</button>
   <button role="menuitem" data-bm="menu"><i aria-hidden="true">&#8962;</i>Main menu</button>
   <button role="menuitem" data-bm="fx"><i aria-hidden="true">&#9834;</i>Sound &amp; animations</button>
   <button role="menuitem" data-bm="stats"><i aria-hidden="true">&#9636;</i>Statistics</button>
@@ -651,6 +692,8 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
 <div id="eraFx" aria-live="polite"></div>
 <div id="handoff" role="dialog" aria-modal="true" aria-labelledby="hoTitle" hidden></div>
 <div id="toast" role="status"></div>
+<div id="tut" hidden><svg class="tut-dim" aria-hidden="true"><path/></svg><div class="tut-catch"></div><div class="tut-ring" aria-hidden="true"></div>
+  <div class="tut-card" id="tutCard" role="dialog" aria-modal="false" aria-labelledby="tutTitle"></div></div>
 <div id="landing" class="loading" role="dialog" aria-modal="true" aria-labelledby="lTitle">
   <div class="l-art" role="img" aria-label="Illustration: a merchant ship sails between hex islands and a lighthouse"></div>
   <div class="l-panel">
@@ -659,8 +702,10 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
     <p class="l-sub">A game by Matthew Dunstan &amp; Brett J. Gilbert, published by AEG</p>
     <p class="l-loading" aria-live="polite">Unfolding the maps&hellip;</p>
     <div id="lMenu" class="l-view l-menu">
+      <p class="l-hint" id="lHint" hidden>New? Try <button type="button" data-tut="start">How to play</button>, a short guided tour.</p>
       <button id="lNew" class="primary">New game<small>Choose a map and players</small></button>
       <button id="lResume" hidden>Resume current game</button>
+      <button id="lTut">How to play<small>Guided tour on a practice map</small></button>
       <a class="lbtn" href="https://www.alderac.com/wp-content/uploads/2025/04/TheGuildOfMerchantExplorers_BaseGame_Rulebook_Optimized.pdf" target="_blank" rel="noopener noreferrer">Read the rulebook &#8599;<small>Official PDF on alderac.com (opens a new tab)</small></a>
       <button id="lQuick">Quick rules<small>One-screen summary of this version</small></button>
       <button id="lStats">Statistics<small>Your record across every map</small></button>
@@ -687,8 +732,13 @@ header#status .fxbtn:focus-visible{outline:3px solid #e2b33b;outline-offset:2px}
 <script>
 'use strict';
 /* Build version and change history, newest first. Bump APP_VERSION and add a CHANGELOG entry with every build. */
-const APP_VERSION = '1.1';
+const APP_VERSION = '1.2';
 const CHANGELOG = [
+  {v: '1.2', date: '2026-10-20', items: [
+    'How to play: a 7-step guided tour on a practice Avenia game, from the home screen, the Guild ledger menu or Quick rules. A spotlight shows the real board and panels, with Back / Next / Skip and arrow keys.',
+    'Try it for real in the tour: place your first explorers, discover a village, complete a trade route, open a ruin for treasure and choose an investigate card.',
+    'Any game in progress is put back exactly as it was afterwards, and the practice game never counts in statistics or changes your saved setup.',
+    'A small "New? Try How to play" hint on the home screen until you have finished the tour once.']},
   {v: '1.1', date: '2026-10-20', items: [
     'Statistics: category chart stays readable when a phone browser forces dark mode, and the popup has a close button in the corner.',
     'Removed the map picker from the game panel, so a misclick can no longer start a new game on another map (choose maps from New game).',
@@ -1060,7 +1110,7 @@ function renderCardHud() {
     c.title = `Current card: ${CARDS[S.card].name} (tap to show it again)`; c.setAttribute('aria-label', c.title);
   }
   const key = S.seed + '|' + S.turnNo;
-  if (key !== revealKey && !eraFxOn && !TEST && !QS.has('selfplay')) { revealKey = key; showCardPop(); }
+  if (key !== revealKey && !eraFxOn && !TEST && !QS.has('selfplay') && !TUT) { revealKey = key; showCardPop(); }
 }
 function showCardPop() {
   const p = $('cardPop');
@@ -2076,7 +2126,7 @@ function runTests() {
   const ok = (cond, name) => { if (cond) pass++; else fail++; out.push((cond ? 'PASS ' : 'FAIL ') + name); };
   const prevMap = MAP_ID;
   setMap('avenia', false);
-  try { avTests(); historyTests(); kzTests(); agTests(); cnTests(); setupTests(); intelTests(); seatTests(); soloTests(); aiLevelTests(); statsTests(); fxTests(ok, out); } finally { setMap(prevMap); }
+  try { avTests(); historyTests(); kzTests(); agTests(); cnTests(); setupTests(); intelTests(); seatTests(); soloTests(); aiLevelTests(); statsTests(); fxTests(ok, out); tutTests(); } finally { setMap(prevMap); }
   out.unshift(`${pass} passed, ${fail} failed`);
   return {pass, fail, out};
 
@@ -2164,6 +2214,86 @@ function runTests() {
   const html = statsMainView(list), one = statsGameView(list, 4);
   ok(/Per map/.test(html) && /Recent games/.test(html) && /<svg class="st-bars"/.test(html) && /Bob/.test(one) && /Ana/.test(one) && /No finished games/.test(statsMainView([])),
     'the statistics page and a game breakdown render');
+  }
+
+  // How to play drives the real UI, so these run against the live page and put everything back afterwards.
+  function tutTests() {
+  out.push('-- How to play tour --');
+  const keys = [TUT_KEY, SETUP_KEY, 'tgome.map', STATS_KEY, 'tgome.zoom', 'tgome.panelMin'], keep = keys.map(k => [k, localStorage.getItem(k)]);
+  const live = S, before = JSON.stringify(S), logN = LOG.length, undoN = undoStack.length, mapObj = MAP, mapId = MAP_ID;
+  const at = id => TUT_BEATS.findIndex(b => b.id === id), me = () => S.players[0], cardText = () => $('tutCard').textContent;
+  try {
+    ok(TUT_STEPS.length === 7 && TUT_STEPS.every((t, i) => TUT_BEATS.some(b => b.s === i)) && TUT_BEATS.every((b, i) => !i || b.s >= TUT_BEATS[i - 1].s)
+       && new Set(TUT_BEATS.map(b => b.id)).size === TUT_BEATS.length, `the tour has 7 steps in order, each with at least one part (${TUT_BEATS.length} parts)`);
+    tutStart();
+    ok(TUT && S !== live && S.tutorial && S.map === 'avenia' && S.seed === TUT_SEED && MAP_ID === 'avenia' && !$('tut').hidden && gameOn, 'starting swaps in a fixed-seed Avenia practice game');
+    const bad = [], long = [];
+    TUT_BEATS.forEach((b, i) => {
+      tutGo(i);
+      const h = TUT.hole, c = TUT.cardRect, n = $('tutCard').querySelector('.tut-body').textContent.trim().split(/\s+/).length;
+      if (n > 60) long.push(`${b.id} ${n}`);
+      const why = !TUT.els.length ? 'no target' : !h || h.r - h.l < 8 || h.b - h.t < 8 ? 'off screen' : c.l < h.r - 1 && c.r > h.l + 1 && c.t < h.b - 1 && c.b > h.t + 1 ? 'covered' : '';
+      if (why) bad.push(`${b.id} (${why})`);
+    });
+    ok(!bad.length, `every part spotlights a real element and the caption never covers it${bad.length ? ': ' + bad.join(', ') : ''}`);
+    ok(!long.length, `captions stay at 60 words or fewer${long.length ? ': ' + long.join(', ') : ''}`);
+    tutGo(at('place'));
+    const legal = tutLegal(), lit = [...document.querySelectorAll('#board .legal')].map(n => n.closest('.hex').dataset.k);
+    ok(legal.length && legal.every(k => isValidMove(S, 0, k)) && lit.length === legal.length && lit.every(k => legal.includes(k))
+       && legal.every(k => TUT.els.some(el => el.closest('.hex').dataset.k === k)) && !$('tut').classList.contains('still'), 'step 4 spotlights the legal spaces next to the capital and lets taps through');
+    const mid = el => { const r = el.getBoundingClientRect(); return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); };
+    const lhex = tutHex(legal)[0], far = tutHex(['20,2'])[0], hitIn = lhex && mid(lhex), hitOut = far && mid(far);
+    ok(hitIn && hitIn.closest('#board .hex') && hitIn.closest('.hex').dataset.k === legal[0] && (!hitOut || hitOut.closest('#tut')),
+      'taps inside the spotlight reach the real board; the dimmed area outside blocks them');
+    onHexTap(MAP.hex[MAP.capital].nb.find(k => !legal.includes(k))); onHexTap(MAP.capital);
+    ok(!Object.keys(me().explorers).length && !undoStack.length, 'tapping an illegal space or the capital places nothing');
+    const k0 = legal[0]; onHexTap(k0); tutRefresh();
+    ok(me().explorers[k0] && me().coins === MAP.hex[k0].v && undoStack.length === 1 && tutLegal().length && tutLegal().every(k => isValidMove(S, 0, k)) && /coin space/.test(cardText()),
+      'a legal tap places through the real handler, pays the coin space and updates the caption');
+    tutGo(at('village')); onHexTap(tutLegal()[0]);
+    const vp = me().prompt;
+    ok(vp && vp.type === 'village' && vp.options.length === 2, 'completing the grassland region asks where the village goes');
+    if (vp) onHexTap(vp.options[0]); tutRefresh();
+    ok(me().villages.length === 1 && me().coins === VILLAGE_VALUE[0] && /Village discovered/.test(cardText()), 'the village is discovered and scores the era I value');
+    tutGo(at('route'));
+    ok(isValidMove(S, 0, '10,5'), 'the second city of the trade route is a legal move');
+    onHexTap('10,5');
+    const rp = me().prompt;
+    ok(rp && rp.type === 'post' && rp.value === 6, 'linking the 2 and 3 cities completes a route worth 6');
+    onHexTap('10,5'); tutRefresh();
+    ok(me().tradePosts.join() === '10,5' && me().coins === 6 && /trading post/.test(cardText()), 'the trading post goes on the chosen city');
+    tutGo(at('ruin'));
+    ok(isValidMove(S, 0, '8,5') && drawsTreasure(S, me(), '8,5') && document.querySelector('#board .hex[data-k="8,5"] .rbadge'), 'the ruin is a legal move and wears the gold lock');
+    onHexTap('8,5');
+    if (modalKind === 'ruinwarn') { tutRefresh(); ok(TUT.els[0] === $('modalBox') && /can't undo/.test(cardText()), "the can't-undo warning gets the spotlight"); closeRuinWarn(true); }
+    tutRefresh();
+    ok(me().treasureTokens['8,5'] && me().coins === 2 && me().treasureLog.length === 2 && !undoStack.length && /\+2 coins/.test(cardText()), 'exploring the ruin draws +2 coins of treasure and ends undo');
+    tutGo(at('invest'));
+    const ib = document.querySelector('#modal.show [data-inv]');
+    ok(modalKind === 'invest' && ib && TUT.els[0] === $('modalBox'), 'the investigate choice is the real popup, in the spotlight');
+    const pick = ib && ib.dataset.inv; if (ib) ib.click(); tutRefresh();
+    ok(me().invest[1] === pick && topAction(me()) && topAction(me()).card === pick && modalKind !== 'invest' && TUT.els.length, 'choosing a card makes it your action');
+    tutGo(at('slots'));
+    ok(me().invest[1] === pick && TUT.els[0] && TUT.els[0].closest('#investBox'), 'the next part keeps the card you chose');
+    ok(!aiBusy && S.current === 0 && !Object.keys(S.players[1].explorers).length && S.players[1].coins === 0, 'the AI seat never plays while the tour runs');
+    const G = structuredClone(S); G.phase = 'over'; G.result = computeResult(G);
+    ok(!statsGameOk(G) && statsGameOk(Object.assign(structuredClone(G), {tutorial: false})) && !statsGate(G) && !recordGame(G), 'practice games never count in statistics');
+    tutGo(TUT_BEATS.length - 1); $('tutCard').querySelector('[data-tut="next"]').click();
+    ok(TUT.i === TUT_BEATS.length && TUT.finished && tutDone() && $('tutCard').querySelector('[data-tut="new"]') && $('tutCard').querySelector('[data-tut="menu"]'),
+      'Finish marks the tour done and offers a real game or the menu');
+    tutEnd('resume');
+    ok(!TUT && JSON.stringify(S) === before && LOG.length === logN && undoStack.length === undoN && MAP === mapObj && MAP_ID === mapId && gameOn
+       && $('tut').hidden && !document.body.classList.contains('tut'), 'finishing puts the previous game back untouched');
+    ok(keys.slice(1, 4).every((k, i) => localStorage.getItem(k) === keep[i + 1][1]), 'the tour never writes the saved setup, map or statistics');
+    tutStart(tutIndex(4, 2));
+    ok(TUT && TUT_BEATS[TUT.i].s === 3 && TUT_BEATS[TUT.i].id === 'village', '?tutorial=4.2 opens part 2 of step 4');
+    tutGo(TUT_BEATS.length); tutEnd('new');
+    ok(!TUT && !$('landing').hidden && landingView === 'setup' && JSON.stringify(S) === before, 'Start a real game opens the setup, with the previous game still kept');
+  } finally {
+    if (TUT) tutEnd('resume');
+    if (!$('landing').hidden) hideLanding();
+    keep.forEach(([k, v]) => v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v));
+  }
   }
 
   // Every seat plays the card in seat order, then the next card is revealed (the engine loop the UI drives seat by seat).
@@ -2853,6 +2983,7 @@ function brandAction(act) {
   if (b) b.focus({preventScroll: true});
   if (act === 'new') showLanding('setup');
   else if (act === 'rules') showRules();
+  else if (act === 'tutorial') tutStart();
   else if (act === 'menu') showLanding('menu');
   else if (act === 'whatsnew') showChangelog();
   else if (act === 'fx') showFxSettings();
@@ -3300,6 +3431,7 @@ function render() {
   renderSeatTabs();
   if (modalKind === 'journal') refreshJournal();
   renderCardHud(); maybeModal(); syncDock(); fxAfterRender();
+  if (TUT) tutSoon();
 }
 let modalClosable = false;
 function dockHead() {
@@ -3322,8 +3454,9 @@ function toggleDock() {
 function showModal(html, kind) {
   modalKind = kind; modalClosable = /data-(act|st)="close"/.test(html);
   $('modalBox').innerHTML = `<div class="mhead">${dockHead()}</div>` + html; $('modal').classList.add('show'); syncDock();
+  if (TUT) tutSoon();
 }
-function hideModal() { modalKind = null; ruinPend = null; $('modal').classList.remove('show'); syncDock(); }
+function hideModal() { modalKind = null; ruinPend = null; $('modal').classList.remove('show'); syncDock(); if (TUT) tutSoon(); }
 function maybeModal() {
   const me = S.players[S.current];
   if (S.phase === 'over') { if (modalKind !== 'over' && modalKind !== 'closed-over' && modalKind !== 'journal' && modalKind !== 'stats') showResults(); return; }
@@ -3465,7 +3598,7 @@ function showRules() {
   <li><b>Solo</b> (1 player): solo era tokens cover goal spots the first time the II, III and I/II/III era cards are revealed. Win by completing all 3 goals and reaching 90 / 120 / 150 coins (Easy / Normal / Hard).</li>
   <li><b>${MAPDEF.name}:</b> ${MAPDEF.notes} Choose the map from New game.</li>
   </ul>
-  <div class="row" style="margin-bottom:8px"><button data-act="maprules">What's different on ${MAPDEF.name}</button></div>
+  <div class="row" style="margin-bottom:8px"><button data-act="tutorial">How to play: guided tour</button><button data-act="maprules">What's different on ${MAPDEF.name}</button></div>
   ${ruinWarnOn() ? '' : '<div class="row" style="margin-bottom:8px"><button data-act="ruinwarn-on">Turn the "can\'t undo" ruin warning back on</button></div>'}
   <p>Tips: Undo works until you reveal hidden information (treasure). Legal ruin spaces that would draw treasure show a gold lock. Use + / - or pinch to zoom on phones. Add <code>?debug</code> to the URL to show hex coordinates, <code>?edit</code> to fix the map, <code>?test</code> to run rule tests.</p>
   ${$('landing').hidden ? '' : `<p class="tnote">Version v${esc(APP_VERSION)} &middot; <button class="lnk" data-act="changelog">What's new</button></p>`}
@@ -3538,6 +3671,7 @@ function onDone() {
   if (modalKind === 'ruinwarn') closeRuinWarn(false);
   if (me.prompt) { investMin = false; maybeModal(); return; }
   if (topAction(me)) { pushUndo(); finishAction(S, cur); render(); return; }
+  if (TUT) { toast('In a real game, <b>End turn</b> now lets the AI play this card on its own map.'); return; }
   endSeat();
 }
 /* ---------- seat order: every seat plays the revealed card in turn, then the next card is revealed ---------- */
@@ -3696,11 +3830,11 @@ function statsEntry(G, now = new Date()) {
   return {v: 1, id: `${G.map || MAP_ID}|${G.seed}`, date: now.toISOString(), map: G.map || MAP_ID, mode: solo ? 'solo' : humans > 1 ? 'pass' : 'ai',
     seed: firstDef(G.seed, null), turns: statNum(G.turnNo), goals, winners, solo, seats};
 }
-// A game counts when it really finished with at least one human seat; AI-only and simulated games never do.
+// A game counts when it really finished with at least one human seat; AI-only, simulated and How to play practice games never do.
 function statsGameOk(G) {
-  return !!(G && !G.sim && G.phase === 'over' && G.result && (G.players || []).some((p, i) => { const st = (G.seats || [])[i] || {}; return st.type ? st.type !== 'ai' : !p.ai; }));
+  return !!(G && !G.sim && !G.tutorial && G.phase === 'over' && G.result && (G.players || []).some((p, i) => { const st = (G.seats || [])[i] || {}; return st.type ? st.type !== 'ai' : !p.ai; }));
 }
-const statsGate = G => !TEST && !EDIT && !QS.has('selfplay') && !QS.has('nostats') && statsGameOk(G);
+const statsGate = G => !TEST && !EDIT && !TUT && !QS.has('selfplay') && !QS.has('nostats') && statsGameOk(G);
 function statsLoad() { try { const a = JSON.parse(localStorage.getItem(STATS_KEY)); return Array.isArray(a) ? a.filter(e => e && e.id && Array.isArray(e.seats)) : []; } catch (e) { return []; } }
 function statsSave(list) { try { localStorage.setItem(STATS_KEY, JSON.stringify(list)); return true; } catch (e) { return false; } }
 // One entry per game id (map + seed): re-renders change nothing, an undo-and-replay of the last move updates the entry in place.
@@ -3881,6 +4015,343 @@ function pwaInit() {
 }
 addEventListener('load', pwaInit);
 
+/* ---------- How to play: a guided tour on a practice Avenia game ----------
+   The real game (S, log, undo, map and UI state) is snapshotted on start and put back on exit. The practice game is flagged
+   S.tutorial so it never reaches statistics, the saved setup is never written, and the AI seat never plays while you read. */
+const TUT_KEY = 'tgome.tutorialDone', TUT_SEED = 20261020;
+const TUT_STEPS = ['Objective', 'The map and the goal cards', 'The era cards', 'Placing explorers and discovering villages', 'Treasure and ruins', 'Investigate cards', 'Special features'];
+let TUT = null, tutTimer = 0;
+const tutDone = () => { try { return localStorage.getItem(TUT_KEY) === '1'; } catch (e) { return false; } };
+const tutShown = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+const tutEls = sel => [...document.querySelectorAll(sel)].filter(tutShown);
+const tutHex = keys => [...new Set(keys)].map(k => document.querySelector(`#board .hex[data-k="${k}"] .hexbase`)).filter(Boolean);
+const tutLegal = () => legalTargets(S, 0);
+const tutNet = p => [MAP.capital, ...p.villages, ...Object.keys(p.explorers)];
+const tutClamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const TUT_ICO = {
+  village: '<path d="M2 16V9l7-6.5L16 9v7z" fill="#159aa6" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/>',
+  route: '<path d="M5 13L13 5" stroke="#8b5a2b" stroke-width="2.2" stroke-dasharray="2.4 1.8"/><circle cx="4.5" cy="13.5" r="3.4" fill="#fbf4e3" stroke="#8b5a2b" stroke-width="1.5"/><circle cx="13.5" cy="4.5" r="3.4" fill="#fbf4e3" stroke="#8b5a2b" stroke-width="1.5"/>',
+  coin: '<circle cx="9" cy="9" r="7" fill="#ececf3" stroke="#5f5f78" stroke-width="1.6"/><circle cx="9" cy="9" r="3.6" fill="none" stroke="#9a9ab0" stroke-width="1.3"/>',
+  tower: '<path d="M6 16.5L7.3 7h3.4L12 16.5z" fill="#fff" stroke="#6a5180" stroke-width="1.3"/><path d="M5.6 7L9 1.5 12.4 7z" fill="#7a5d93"/>',
+  goal: '<rect x="1.5" y="1.5" width="15" height="15" rx="3.5" fill="#b0322b"/><path d="M5 9.2l2.8 2.8L13 6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+  chest: '<path d="M2 8.5h14v7.5H2z" fill="#b9853a" stroke="#5c3e1b" stroke-width="1.3"/><path d="M2 8.5q7-7.5 14 0z" fill="#d7a64c" stroke="#5c3e1b" stroke-width="1.3"/><path d="M8 8.5h2v3H8z" fill="#f5e3a3"/>'
+};
+const TUT_TERR = {G: '#a3ad5a', D: '#e8d29c', M: '#cd8061', S: '#a3a9a8', W: '#dccbe8'};
+const tutI = k => `<svg class="tut-i" viewBox="0 0 18 18" aria-hidden="true">${TUT_TERR[k] ? `<polygon points="17,9 13,15.9 5,15.9 1,9 5,2.1 13,2.1" fill="${TUT_TERR[k]}" stroke="#5d5143" stroke-width="1.2"/>` : TUT_ICO[k]}</svg>`;
+// Scripted demo states: explorers dropped straight onto the map (no coins, no checks), then a card dealt to every seat.
+const tutPut = (p, keys) => keys.forEach(k => { p.explorers[k] = true; });
+function tutDeal(S, id) {
+  S.deck = S.deck.filter(c => c !== id); S.card = id;
+  S.revealed = S.revealed.filter(c => c !== id).concat(id); S.eraTurn = S.revealed.length; S.turnNo = S.eraTurn;
+  S.players.forEach((p, pid) => { p.actions = []; p.prompt = null; setupCard(S, pid, id); });
+}
+function tutMid(S) {
+  for (const c of ['G2', 'E1']) { S.deck = S.deck.filter(x => x !== c); S.revealed.unshift(c); }
+  S.eraTurn = S.revealed.length; S.players[0].invest[1] = 'v05'; S.players[1].invest[1] = 'v20';
+}
+function tutRuin(S, p) {
+  const td = S.treasureDeck; td.splice(td.indexOf('vase'), 1); td.splice(td.indexOf('c2'), 1); td.unshift('c2');
+  p.treasure.push('vase'); p.treasureLog.push({id: 'vase', era: 1, turn: 1}); p.treasureTokens['8,10'] = true;
+  tutPut(p, ['11,6', '10,6', '9,5']); tutDeal(S, 'S3');
+}
+function tutInvest(S) {
+  S.investDeck = ['v05', 'v15', ...S.investDeck.filter(id => id !== 'v05' && id !== 'v15')];
+  tutDeal(S, 'E1');
+}
+// Parts of the tour. s: step (0-6); at: elements to spotlight; html: caption (60 words at most); setup: scripted state built on a fresh
+// copy of the practice game (prev = the state being left); play: the spotlight lets taps through to the real board and buttons.
+const TUT_BEATS = [
+  {s: 0, id: 'goal', t: 'Most coins wins', at: () => tutEls('header .cpill'),
+    html: `<p>After 4 eras, the player with the most coins wins. Ties go to the most towers, then the most villages.</p>
+      <p>Coins come from ${tutI('village')}villages, ${tutI('route')}trade routes, ${tutI('coin')}coin spaces, ${tutI('tower')}discovery towers, ${tutI('goal')}goals and ${tutI('chest')}treasure. Your total shows up here.</p>`},
+  {s: 0, id: 'same', t: 'Your own map, the same card', at: () => tutEls('#cardCorner, #seatTabs'),
+    html: `<p>Every player explores their own copy of the map. Each turn one explore card is revealed (shown in this corner), and everyone plays that same card: you first, then the AI on its own map.</p><p>Tap a player's tab to peek at their map.</p>`},
+  {s: 1, id: 'terrain', t: 'Four kinds of terrain', at: () => tutHex(['10,9', '12,7', '12,8', '10,7']),
+    html: `<p>Spaces are ${tutI('G')}<b>grassland</b>, ${tutI('D')}<b>desert</b>, ${tutI('M')}<b>mountain</b> or ${tutI('S')}<b>sea</b>. Explore cards name the terrain to use, like "2 grassland".</p><p>${tutI('W')}<b>Discovery spaces</b> are wild: any card can explore them.</p>`},
+  {s: 1, id: 'places', t: 'Capital, cities and coin spaces', at: () => tutHex([MAP.capital, '11,9', '10,8']),
+    html: `<p>Your <b>capital</b> (the walled town) is where you start. You can't explore it, but you can always explore from it.</p><p><b>Cities</b> show a value from 2 to 5 for trade routes. ${tutI('coin')}<b>Coin spaces</b> pay their coins every time you explore them, in any era.</p>`},
+  {s: 1, id: 'ruins', t: 'Ruins and discovery spaces', at: () => tutHex(['8,5', '8,10']),
+    html: `<p>${tutI('chest')}<b>Ruins</b> hold treasure: you draw a treasure card the first time you explore each one. On Avenia they all lie on the sea.</p><p>${tutI('tower')}<b>Discovery spaces</b> (purple, near the corners) become towers. More on both soon.</p>`},
+  {s: 1, id: 'regions', t: 'Regions and lands', at: () => tutHex(MAP.regions[MAP.hex['14,7'].region].hexes),
+    html: `<p>A <b>region</b> is a group of touching spaces of one land terrain, like these 4 grassland spaces. Cities and coin spaces inside it count too.</p><p>A <b>land</b> is a stretch of land cut off by sea or the map edge. One Avenia goal asks for villages on 3 lands.</p>`},
+  {s: 1, id: 'goals', t: 'The 3 goal cards', panel: true, at: () => tutEls('#goalBox'),
+    html: `<p>Each game deals 3 of this map's goals. The first player to complete a goal earns <b>10 coins</b>; anyone who completes it later earns <b>5</b>. Players who get there on the same turn all earn 10.</p><p>This table shows who has done what.</p>`},
+  {s: 2, id: 'deck', t: 'Four eras, four decks', setup: tutMid, at: () => tutEls('#cardBox .chips').length ? tutEls('#cardBox') : tutEls('#deckStrip'),
+    html: `<p>The game lasts <b>4 eras</b>. Each era's deck holds the 5 basic explore cards plus the era cards: 6 cards in era I, then 7, 8 and 9.</p><p>These chips show which cards have come up and which are still to come.</p>`},
+  {s: 2, id: 'era', t: 'Era cards', setup: tutMid, at: () => tutEls('header .epill'),
+    html: `<p>Era cards I, II and III bring investigate cards. The first time an era card is revealed, you pick a new investigate card. When it comes up again in a later era, you play your card again.</p><p>In era IV, the I/II/III card lets you play any one of yours.</p>`},
+  {s: 2, id: 'eraend', t: 'End of an era', setup: tutMid, panel: true, at: () => tutEls('#trackBox'),
+    html: `<p>When the deck runs out, the era ends and all your explorers go back to your supply. Villages, towers and trading posts stay, and you can start again from any village.</p><p>New villages are worth more each era: <b>1, 2, 3, then 4</b> coins.</p>`},
+  {s: 3, id: 'place', t: 'Place your first explorers', play: true, setup: S => tutDeal(S, 'G2'),
+    at: (S, p) => tutHex([...tutNet(p), ...tutLegal()]),
+    html: (S, p) => !topAction(p) ? `<p><b>Card done!</b> Other cards ask for a shape: 3 sea spaces in a <b>straight line</b>, 2 <b>adjacent</b> spaces, or a <b>path</b>. You may always place fewer explorers than a card shows.</p>`
+      : Object.keys(p.explorers).length ? `<p><b>+1 coin</b> from that coin space! Each explorer is a new starting point, so more grassland is now in reach. Place the second one.</p>`
+      : `<p>${cardIcon('G2', 'csm')}<b>Golden rule:</b> place explorers one at a time, each next to your capital, a village or one of your explorers. Follow the card: here, <b>2 grassland</b>.</p><p class="tut-tip">Tap the highlighted space next to your capital.</p>`},
+  {s: 3, id: 'village', t: 'Discover a village', play: true, setup: (S, p) => { tutPut(p, ['11,8', '10,9']); tutDeal(S, 'G2'); },
+    at: (S, p) => tutHex([MAP.capital, '10,9', '11,8', '12,9']),
+    html: (S, p) => p.prompt && p.prompt.type === 'village' ? `<p><b>Region complete!</b> Tap one of the highlighted blank spaces to put your village there.</p>`
+      : p.villages.length ? `<p><b>Village discovered: +${VILLAGE_VALUE[0]} coin</b> in era I. It stays all game, and you can explore from it in every era. A region only ever gets one village.</p>`
+      : `<p>Explore <b>every</b> space of a region in one era and a village appears on one of its blank spaces.</p><p>Two of these three grassland spaces have explorers. <b>Explore the last one.</b></p>`},
+  {s: 3, id: 'route', t: 'Complete a trade route', play: true, setup: (S, p) => { tutPut(p, ['11,8', '11,9', '11,6', '11,5']); tutDeal(S, 'D2'); },
+    at: (S, p) => tutHex([MAP.capital, '11,8', '11,9', '11,6', '11,5', '10,5']),
+    html: (S, p) => p.prompt && p.prompt.type === 'post' ? `<p><b>Trade route: 3 &times; 2 = ${p.prompt.value} coins!</b> Now tap one of the two cities for your trading post.</p>`
+      : p.tradePosts.length ? `<p><b>+6 coins and a trading post.</b> The post stays all game, and that city can never score another route. The other city still can.</p>`
+      : `<p>Link two cities with an unbroken chain of explorers, villages or your capital to score their values multiplied together.</p><p>Your chain reaches the 2-city. <b>Explore the 3-city (desert, at the top) to link them.</b></p>`},
+  {s: 3, id: 'tower', t: 'Discovery towers', at: () => tutHex(['16,13']),
+    html: `<p>${tutI('tower')}This is a <b>discovery space</b>. Any card can explore it, and your explorer turns into a tower right away.</p><p>Your 1st, 2nd, 3rd and 4th towers pay <b>6, 8, 10 and 14</b> coins. Towers stay all game and break ties.</p>`},
+  {s: 3, id: 'bar', t: 'The action bar', play: true, at: () => tutEls('#actionBar'),
+    setup: S => { tutDeal(S, 'G2'); const before = structuredClone(S); placeExplorer(S, 0, '11,8'); return {undo: before}; },
+    html: `<p>This bar shows the card, how many explorers you've placed and what to tap.</p><p><b>Undo</b> takes back your last explorer (until you draw treasure). <b>Done</b> ends a card early; it says <b>Skip</b> if you placed none. Try them.</p>`},
+  {s: 4, id: 'ruin', t: 'Ruins hold treasure', play: true, setup: tutRuin,
+    at: (S, p) => modalKind === 'ruinwarn' ? tutEls('#modalBox') : tutHex(['8,5', '9,5', '10,6', '11,6', MAP.capital, ...Object.keys(p.explorers)]),
+    html: (S, p) => modalKind === 'ruinwarn' ? `<p>This is the <b>can't undo</b> warning: a treasure card can't be put back. Tap <b>Place explorer</b>.</p><p>You can turn the warning off here, and back on from Rules.</p>`
+      : p.treasureLog.length > 1 ? `<p><b>Treasure: +2 coins</b>, paid at once. The gold token stays on the ruin, so exploring it again later draws nothing.</p><p>Carry on along the sea line, or tap Next.</p>`
+      : `<p>${cardIcon('S3', 'csm')}The first time you explore each ruin, you draw a treasure card. A ruin you can reach wears a <b>gold lock</b>: once you draw, you can't undo.</p><p class="tut-tip">Tap the ruin with the lock.</p>`},
+  {s: 4, id: 'treasure', t: 'Your treasure', panel: true, at: () => tutEls('#treasureBox'), setup: (S, p) => { tutRuin(S, p); placeExplorer(S, 0, '8,5'); },
+    html: `<p>Some treasure works at once: <b>+2 coins</b>, or <b>1 extra explorer</b> to place now.</p><p>The rest is kept and scores at the end: vases as a set, coins per village on one terrain, per 2 villages, or per tower. Open the register for the details.</p>`},
+  {s: 5, id: 'invest', t: 'Choose an investigate card', play: true, setup: tutInvest,
+    at: (S, p) => p.prompt ? (modalKind === 'invest' ? tutEls('#modalBox') : tutEls('#btnDone')) : tutHex([...tutNet(p), ...tutLegal()]),
+    html: (S, p) => p.prompt ? (modalKind === 'invest' ? `<p>Era card I was revealed for the first time, so you draw <b>2 investigate cards and keep 1</b>. The other goes back under the deck.</p><p class="tut-tip">Pick the one you like.</p>`
+      : `<p>You minimised the choice to look at the map. Tap <b>Show cards</b> to bring it back.</p>`)
+      : `<p><b>Your new card is your action right now</b> (see the action bar). Try it on the highlighted spaces, or tap Next.</p>`},
+  {s: 5, id: 'slots', t: 'Your investigate cards', panel: true, at: () => tutEls('#investBox .card').slice(0, 1),
+    setup: (S, p, prev) => { tutInvest(S); resolvePrompt(S, 0, (prev && prev.tutorial && prev.players[0].invest[1]) || 'v05'); },
+    html: (S, p) => `<p>${cardIcon(p.invest[1], 'cmod')}Your card sits in slot <b>I</b>. Each time era card I comes up in a later era, you play it again.</p><p>You add cards for II and III too, and in era IV the I/II/III card lets you pick any one.</p>`},
+  {s: 6, id: 'solo', t: 'Solo mode', at: () => tutEls('header .bnew').length ? tutEls('header .bnew') : tutEls('#brandBtn'),
+    html: `<p>Choose <b>1 player</b> in New game to play solo. Each goal has a 10 and a 5 spot <span class="sspot">10</span> <span class="sspot">5</span>, and era tokens <span class="sspot cov">II</span> cover them as the II, III and I/II/III cards first appear.</p><p>Win with all 3 goals and 90, 120 or 150 coins.</p>`},
+  {s: 6, id: 'seats', t: 'Friends and AI rivals', at: () => tutEls('#seatTabs'),
+    html: `<p>Play with 1 to 4 seats, each a human or an AI on Easy, Normal or Hard. With 2 or more humans it's <b>pass and play</b>: a cover hides the board while you hand over the device.</p><p>Every player gets a tab up here.</p>`},
+  {s: 6, id: 'maps', t: 'Four maps to explore', panel: true, at: () => tutEls('#trackBox [data-act="maprules"]'),
+    html: `<p><b>Avenia</b> is the classic map. <b>Aghon</b> has small islands and coastal cities. <b>Kazan</b> has volcanoes you can't cross and lettered ruins. <b>Cnidaria</b> has reefs, shaped ruins and crystals that pay more the more you hold.</p><p>Each map's <b>What's different</b> overview opens from here.</p>`},
+  {s: 6, id: 'extras', t: 'Make it yours', at: () => tutEls('#brandBtn, #fxSnd'),
+    html: `<p>The <b>Guild ledger</b> menu (top left) has Statistics, Sound &amp; animations, Rules and this tour. The speaker button mutes sound.</p><p>Any popup can be <b>docked</b> beside the map, and animations follow your device's reduced-motion setting.</p>`}
+];
+// Index of part m (1-based) of step s (1-based), as used by ?tutorial=s.m.
+const tutIndex = (s, m = 1) => { const list = TUT_BEATS.map((b, i) => b.s === s - 1 ? i : -1).filter(i => i >= 0); return list.length ? list[Math.min(m, list.length) - 1] : 0; };
+function tutStart(at = 0) {
+  if (EDIT || !S) return;
+  if (TUT) { tutGo(at); return; }
+  if (eraFxOn) { toast('How to play opens once the new era has begun.'); return; }
+  const sc = $('boardScroll');
+  const saved = {S: structuredClone(S), LOG: structuredClone(LOG), undo: structuredClone(undoStack), view, homePid, lastHuman, seatInc0, handoff: handoff && {...handoff},
+    aiBusy, investMin, gameOn, soloSeen, revealKey, mapRulesPending, modalKind, intel: structuredClone(intel), panelMin, MAP, MAP_ID, MAPDEF,
+    zoom: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zoom')) || 1,
+    scroll: [sc.scrollLeft, sc.scrollTop, $('panel').scrollTop, $('panelBody').scrollTop], landing: !$('landing').hidden, focus: document.activeElement};
+  seatGen++; fxCancel(); hideModal(); hideHandoff(); aiBusy = false;
+  if (brandOpen) setBrandMenu(false);
+  if (saved.landing) hideLanding();
+  setMap('avenia', false);
+  const base = newGame(TUT_SEED, {seats: [{name: 'You', type: 'human'}, {name: 'AI', type: 'ai', level: 'normal'}]});
+  base.tutorial = true;
+  TUT = {i: 0, saved, base, html: '', els: [], hole: null, cardRect: null, play: false, finished: false, enter: false};
+  gameOn = true; homePid = 0; view = 0; lastHuman = null; soloSeen = 0;
+  document.body.classList.add('tut'); $('tut').hidden = false;
+  setZoom(innerWidth < 600 ? 2 : 1); sc.scrollLeft = 0; sc.scrollTop = 0;
+  tutGo(at);
+}
+function tutGo(i) {
+  if (!TUT) return;
+  i = tutClamp(i | 0, 0, TUT_BEATS.length);
+  const prev = S, b = TUT_BEATS[i];
+  TUT.i = i; TUT.enter = true;
+  if (modalKind) hideModal();
+  investMin = false; ruinPend = null;
+  if (b) {
+    S = structuredClone(TUT.base); LOG.length = 0; undoStack = [];
+    const extra = b.setup ? b.setup(S, S.players[0], prev) : null;
+    if (extra && extra.undo) undoStack.push({state: extra.undo, log: 0});
+    view = 0; homePid = 0; fx.snap = null;
+    panelMin = !b.panel;
+  }
+  render();
+  tutRefresh();
+}
+function tutNext() {
+  if (!TUT || TUT.i >= TUT_BEATS.length) return;
+  if (TUT.i === TUT_BEATS.length - 1) { TUT.finished = true; try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {} }
+  tutGo(TUT.i + 1);
+}
+function tutSoon() { clearTimeout(tutTimer); tutTimer = setTimeout(tutRefresh, 0); }
+function tutCardHTML(b) {
+  const i = TUT_BEATS.indexOf(b), parts = TUT_BEATS.filter(x => x.s === b.s), last = i === TUT_BEATS.length - 1;
+  const dots = TUT_STEPS.map((t, j) => `<i class="${j < b.s ? 'done' : j === b.s ? 'on' : ''}"></i>`).join('');
+  return `<div class="tut-top"><span class="tut-k">Step ${b.s + 1} of ${TUT_STEPS.length}</span><span class="tut-dots" aria-hidden="true">${dots}</span>`
+    + `<button class="tut-x" data-tut="skip" aria-label="Close the tour" title="Close the tour">&times;</button></div>`
+    + `<h2 id="tutTitle">${b.t}</h2><div class="tut-part">${TUT_STEPS[b.s]}${parts.length > 1 ? ` &middot; part ${parts.indexOf(b) + 1} of ${parts.length}` : ''}</div>`
+    + `<div class="tut-body" aria-live="polite">${typeof b.html === 'function' ? b.html(S, S.players[0]) : b.html}</div>`
+    + `<div class="tut-nav"><button class="tut-skip" data-tut="skip">Skip tour</button><span class="sp"></span><button data-tut="back"${i ? '' : ' disabled'}>Back</button>`
+    + `<button class="primary" data-tut="next">${last ? 'Finish' : 'Next'}</button></div>`;
+}
+function tutEndHTML() {
+  const z = TUT.saved, fin = TUT.finished;
+  return `<div class="tut-end"><div class="tut-top"><span class="tut-k">${fin ? 'Tour complete' : 'Tour closed'}</span><span class="sp" style="flex:1"></span>`
+    + `<button class="tut-x" data-tut="close" aria-label="Close" title="Close">&times;</button></div>`
+    + `<h2 id="tutTitle">${fin ? 'You\u2019re ready to explore!' : 'Ready when you are'}</h2>`
+    + `<div class="tut-body"><p>${fin ? 'That\u2019s everything you need for your first expedition.' : 'Reopen How to play any time from the home screen, Quick rules or the Guild ledger menu.'} The practice game is put away and nothing was recorded.</p>`
+    + `${z.gameOn ? `<p>Your ${z.S.phase === 'over' ? 'finished ' : ''}game is just as you left it.</p>` : ''}</div>`
+    + `<div class="tut-nav"><button class="primary" data-tut="new">Start a real game</button>${z.gameOn ? '<button data-tut="resume">Back to my game</button>' : ''}`
+    + `<button data-tut="menu">Back to menu</button><button class="tut-skip" data-tut="back">Back to the tour</button></div></div>`;
+}
+function tutRefresh() {
+  if (!TUT) return;
+  const i = TUT.i, b = TUT_BEATS[i], card = $('tutCard'), enter = TUT.enter;
+  TUT.enter = false;
+  const html = b ? tutCardHTML(b) : tutEndHTML();
+  if (html !== TUT.html) {
+    TUT.html = html; card.innerHTML = html;
+    if (enter) {
+      card.classList.remove('in'); if (!reducedMotion() && !QS.has('tutorial')) { void card.offsetWidth; card.classList.add('in'); }
+      const f = card.querySelector('[data-tut="next"], [data-tut="new"]'); if (f) f.focus({preventScroll: true});
+    }
+  }
+  TUT.play = !!(b && b.play);
+  $('tut').classList.toggle('still', !TUT.play);
+  tutReveal(b ? b.at(S, S.players[0]) : []);
+  tutPlace();
+  // The phone panel animates open, so look again once it has settled.
+  if (enter) setTimeout(() => { if (TUT && TUT.i === i) { tutReveal(b ? b.at(S, S.players[0]) : []); tutPlace(); } }, 340);
+}
+const tutBox = r => ({l: r.left, t: r.top, r: r.right, b: r.bottom});
+const tutUnion = rs => rs.length ? rs.reduce((u, r) => ({l: Math.min(u.l, r.l), t: Math.min(u.t, r.t), r: Math.max(u.r, r.r), b: Math.max(u.b, r.b)})) : null;
+// Scroll each scrollable ancestor (board, panel, popup) so the targets are in view; the page itself never scrolls.
+function tutReveal(els) {
+  if (!els.length) return;
+  for (let sc = els[0].parentElement; sc && sc !== document.body; sc = sc.parentElement) {
+    const st = getComputedStyle(sc);
+    if (!/auto|scroll/.test(st.overflowX + st.overflowY)) continue;
+    const u = tutUnion(els.map(el => tutBox(el.getBoundingClientRect()))), s = tutBox(sc.getBoundingClientRect());
+    const fix = (a, b, lo, hi) => { const e = Math.min(40, (hi - lo - (b - a)) / 4); return a >= lo + e && b <= hi - e ? 0 : b - a > hi - lo - 16 ? a - lo - 8 : (a + b) / 2 - (lo + hi) / 2; };
+    sc.scrollTop += fix(u.t, u.b, s.t, s.b); sc.scrollLeft += fix(u.l, u.r, s.l, s.r);
+  }
+}
+// The part of el that is really on screen: clipped by every scrolling or clipping ancestor and the viewport.
+function tutVisRect(el) {
+  let v = tutBox(el.getBoundingClientRect());
+  for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+    const st = getComputedStyle(a);
+    if (st.overflowX === 'visible' && st.overflowY === 'visible') continue;
+    const q = tutBox(a.getBoundingClientRect());
+    v = {l: Math.max(v.l, q.l), t: Math.max(v.t, q.t), r: Math.min(v.r, q.r), b: Math.min(v.b, q.b)};
+  }
+  v = {l: Math.max(v.l, 0), t: Math.max(v.t, 0), r: Math.min(v.r, innerWidth), b: Math.min(v.b, innerHeight)};
+  return v.r - v.l > 1 && v.b - v.t > 1 ? v : null;
+}
+// Scroll the targets' scrollable ancestors so the targets sit inside the screen band [t, b] (the part the card leaves free).
+function tutRevealInto(els, t, b) {
+  let moved = false;
+  for (let sc = els[0].parentElement; sc && sc !== document.body; sc = sc.parentElement) {
+    const st = getComputedStyle(sc);
+    if (!/auto|scroll/.test(st.overflowY)) continue;
+    const u = tutUnion(els.map(el => tutBox(el.getBoundingClientRect()))), s = tutBox(sc.getBoundingClientRect());
+    const lo = Math.max(t, s.t), hi = Math.min(b, s.b);
+    if (hi - lo < 24 || (u.t >= lo && u.b <= hi)) continue;
+    const before = sc.scrollTop;
+    sc.scrollTop += u.b - u.t > hi - lo ? u.t - lo - 4 : (u.t + u.b) / 2 - (lo + hi) / 2;
+    moved = moved || sc.scrollTop !== before;
+  }
+  return moved;
+}
+// Spotlight hole over the targets, and the caption card beside it: below, above or to the side, never on top of it.
+function tutPlace(pass = 0) {
+  if (!TUT) return;
+  const b = TUT_BEATS[TUT.i], ov = $('tut'), card = $('tutCard'), ring = ov.querySelector('.tut-ring'), m = 8;
+  const W = document.documentElement.clientWidth, H = document.documentElement.clientHeight;
+  const els = TUT.els = b ? b.at(S, S.players[0]) : [];
+  let h = tutUnion(els.map(tutVisRect).filter(Boolean));
+  if (h) h = {l: Math.max(2, h.l - 6), t: Math.max(2, h.t - 6), r: Math.min(W - 2, h.r + 6), b: Math.min(H - 2, h.b + 6)};
+  card.style.width = '';
+  let cw = card.offsetWidth, ch = card.offsetHeight;
+  let x = (W - cw) / 2, y = (H - ch) / 2;
+  if (h) {
+    const fitB = H - h.b - m >= ch + m, fitA = h.t - m >= ch + m, fitR = W - h.r - m >= cw + m, fitL = h.l - m >= cw + m;
+    const cx = tutClamp((h.l + h.r - cw) / 2, m, W - cw - m), cy = tutClamp((h.t + h.b - ch) / 2, m, H - ch - m);
+    const sideW = Math.max(h.l, W - h.r) - 2 * m;
+    if ((fitL || fitR) && (h.b - h.t > H * .45 || !(fitA || fitB))) { x = fitL && (h.l > W - h.r || !fitR) ? h.l - m - cw : h.r + m; y = cy; }
+    else if (fitB && (H - h.b >= h.t || !fitA)) { x = cx; y = h.b + m; }
+    else if (fitA) { x = cx; y = h.t - m - ch; }
+    else if (sideW >= 240 && (card.style.width = Math.min(cw, sideW) + 'px', card.offsetHeight <= H - 2 * m)) {
+      // Short screens: a narrower card beside the spotlight.
+      cw = card.offsetWidth; ch = card.offsetHeight;
+      x = h.l > W - h.r ? h.l - m - cw : h.r + m; y = tutClamp((h.t + h.b - ch) / 2, m, H - ch - m);
+    } else {
+      card.style.width = ''; cw = card.offsetWidth; ch = card.offsetHeight;
+      // No room anywhere: pin the card to the roomier edge, scroll the targets into the band it leaves free (board, panel),
+      // and trim the spotlight to whatever is still left uncovered.
+      x = cx;
+      const low = H - h.b >= h.t, band = low ? [m, H - ch - 2 * m] : [ch + 2 * m, H - m];
+      if (!pass && tutRevealInto(els, band[0], band[1])) return tutPlace(1);
+      if (low) { y = H - ch - m; h.b = Math.min(h.b, y - m); } else { y = m; h.t = Math.max(h.t, y + ch + m); }
+      if (h.b - h.t < 8) h = null;
+    }
+  }
+  card.style.left = Math.round(x) + 'px'; card.style.top = Math.round(y) + 'px';
+  TUT.hole = h; TUT.cardRect = {l: x, t: y, r: x + cw, b: y + ch};
+  let d = `M0 0H${W}V${H}H0Z`;
+  if (h) {
+    const r = Math.min(12, (h.r - h.l) / 2, (h.b - h.t) / 2), f = v => Math.round(v * 10) / 10;
+    d += ` M${f(h.l + r)} ${f(h.t)}H${f(h.r - r)}A${f(r)} ${f(r)} 0 0 1 ${f(h.r)} ${f(h.t + r)}V${f(h.b - r)}A${f(r)} ${f(r)} 0 0 1 ${f(h.r - r)} ${f(h.b)}`
+      + `H${f(h.l + r)}A${f(r)} ${f(r)} 0 0 1 ${f(h.l)} ${f(h.b - r)}V${f(h.t + r)}A${f(r)} ${f(r)} 0 0 1 ${f(h.l + r)} ${f(h.t)}Z`;
+  }
+  ov.querySelector('.tut-dim path').setAttribute('d', d);
+  ring.hidden = !h;
+  if (h) Object.assign(ring.style, {left: h.l - 3 + 'px', top: h.t - 3 + 'px', width: h.r - h.l + 6 + 'px', height: h.b - h.t + 6 + 'px'});
+}
+// Leave the tour: put the real game and UI back exactly as they were, then go where the player chose.
+function tutEnd(choice) {
+  if (!TUT) return;
+  const z = TUT.saved;
+  TUT = null; clearTimeout(tutTimer);
+  $('tut').hidden = true; $('tutCard').innerHTML = ''; document.body.classList.remove('tut');
+  seatGen++; fxCancel(); hideModal(); hideHandoff();
+  MAP = z.MAP; MAP_ID = z.MAP_ID; MAPDEF = z.MAPDEF; $('mapSel').value = MAP_ID;
+  S = z.S; LOG.length = 0; LOG.push(...z.LOG); undoStack = z.undo;
+  ({view, homePid, lastHuman, seatInc0, investMin, gameOn, soloSeen, revealKey, mapRulesPending, panelMin} = z);
+  Object.assign(intel, z.intel); aiBusy = false; fx.snap = null;
+  if (z.modalKind === 'over' || z.modalKind === 'closed-over') modalKind = 'closed-over';
+  setZoom(z.zoom);
+  if (z.handoff) showHandoff(z.handoff.to); else render();
+  const sc = $('boardScroll');
+  [sc.scrollLeft, sc.scrollTop, $('panel').scrollTop, $('panelBody').scrollTop] = z.scroll;
+  if (z.aiBusy && gameOn && S.phase === 'play') beginSeat();
+  const go = choice || (z.landing || !gameOn ? 'menu' : 'resume');
+  if (go === 'new') showLanding('setup');
+  else if (go === 'menu' || !gameOn) showLanding('menu');
+  else if (z.focus && z.focus.isConnected && z.focus !== document.body) z.focus.focus({preventScroll: true});
+}
+$('tutCard').addEventListener('click', e => {
+  const b = e.target.closest('[data-tut]'); if (!b || !TUT) return;
+  const a = b.dataset.tut;
+  if (a === 'next') tutNext();
+  else if (a === 'back') tutGo(TUT.i - 1);
+  else if (a === 'skip') tutGo(TUT_BEATS.length);
+  else if (a === 'close') tutEnd();
+  else tutEnd(a);
+});
+addEventListener('keydown', e => {
+  if (!TUT) return;
+  const k = e.key;
+  if (k === 'ArrowRight' || k === 'ArrowLeft' || k === 'Escape') {
+    if (k !== 'Escape' && e.target.closest && e.target.closest('input, select, textarea')) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (k === 'Escape') { if (TUT.i >= TUT_BEATS.length) tutEnd(); else tutGo(TUT_BEATS.length); }
+    else if (k === 'ArrowRight') tutNext();
+    else if (TUT.i > 0) tutGo(TUT.i - 1);
+  } else if (k === 'Tab') {
+    // Keep keyboard focus on the caption, plus the buttons inside the spotlight when this part is hands-on.
+    const pool = [...$('tutCard').querySelectorAll('button:not([disabled])')];
+    if (TUT.play) for (const el of TUT.els) if (!el.closest('#board')) pool.push(...(el.matches('button') ? [el] : el.querySelectorAll('button:not([disabled]), input')));
+    const f = pool.filter(tutShown); if (!f.length) return;
+    e.preventDefault();
+    const j = f.indexOf(document.activeElement);
+    f[j < 0 ? (e.shiftKey ? f.length - 1 : 0) : (j + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus();
+  }
+}, true);
+addEventListener('resize', () => { if (TUT) { tutPlace(); tutReveal(TUT.els); tutPlace(); } });
+// The board, panel and popups change size as the phone panel opens and closes; keep the spotlight on its target.
+if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (TUT) tutPlace(); }); for (const id of ['boardScroll', 'panel', 'modalBox', 'actionBar', 'status']) ro.observe($(id)); }
+if (QS.has('tutorial')) document.body.classList.add('tutshot');
+addEventListener('scroll', () => { if (TUT) tutPlace(); }, true);
+
 /* ---------- landing screen: rulebook, quick rules, new game setup ---------- */
 const MAP_BLURB = {avenia: 'The classic map. Every ruin lies on the sea.', kazan: 'Volcanoes block your path. Lettered ruins drive the goals.', aghon: 'Small islands and coastal cities. No extra rules; trade routes shine.',
   cnidaria: 'Jagged reefs, shaped ruins and Sonulux crystals that pay more the more you hold.'};
@@ -3896,6 +4367,7 @@ function showLanding(viewName = 'menu') {
   for (const el of document.querySelectorAll('body > header, body > main')) el.inert = true;
   $('lResume').hidden = !gameOn;
   $('lResume').textContent = gameOn && S.phase === 'over' ? 'Back to the finished game' : 'Resume current game';
+  $('lHint').hidden = tutDone();
   landingShow(viewName);
 }
 function landingShow(viewName) {
@@ -3974,6 +4446,8 @@ function wireLanding() {
   $('lBack').addEventListener('click', () => landingShow('menu'));
   $('lResume').addEventListener('click', () => { hideLanding(); render(); });
   $('lQuick').addEventListener('click', showRules);
+  $('lTut').addEventListener('click', () => tutStart());
+  $('lHint').addEventListener('click', e => { if (e.target.closest('[data-tut="start"]')) tutStart(); });
   $('lVer').textContent = 'v' + APP_VERSION; $('bmVer').textContent = 'v' + APP_VERSION;
   $('lVer').addEventListener('click', showChangelog);
   $('lSetup').addEventListener('submit', startFromSetup);
@@ -4639,6 +5113,7 @@ function init() {
     else if (b.dataset.act === 'new') showLanding('setup');
     else if (b.dataset.act === 'maprules') showMapRules();
     else if (b.dataset.act === 'changelog') showChangelog();
+    else if (b.dataset.act === 'tutorial') { hideModal(); tutStart(); }
     else if (b.dataset.act === 'close') { const was = modalKind; hideModal(); if (was === 'over') modalKind = 'closed-over'; if ((was === 'coins' || was === 'maprules' || was === 'journal' || was === 'stats') && S && S.phase === 'over') modalKind = 'closed-over'; if (was === 'treasure' || was === 'eracards' || was === 'coins' || was === 'maprules' || was === 'journal') render(); }
   });
   for (const id of ['intelBar', 'panel']) $(id).addEventListener('click', onIntelClick);
@@ -4660,7 +5135,11 @@ function init() {
     const su = +QS.get('setup');
     if (su >= 1 && su <= MAX_SEATS) gameSetup = normSetup(Object.assign({}, gameSetup, selfPlaySeats(su === 1 ? 'solo' : su === 2 ? '' : String(su))));
     previewGame(); showLanding('menu');
-    setTimeout(() => { $('landing').classList.remove('loading'); landingShow(QS.has('setup') ? 'setup' : 'menu'); }, reducedMotion() ? 0 : 350);
+    setTimeout(() => {
+      $('landing').classList.remove('loading'); landingShow(QS.has('setup') ? 'setup' : 'menu');
+      // ?tutorial=N (or N.M for part M) opens that step of How to play, for screenshots.
+      if (QS.has('tutorial')) { const [s, m] = (QS.get('tutorial') || '1').split('.').map(Number); tutStart(tutIndex(s || 1, m || 1)); }
+    }, reducedMotion() ? 0 : 350);
     return;
   }
   if (QS.has('selfplay') || QS.has('seats')) gameSetup = normSetup(Object.assign(selfPlaySeats(QS.get('seats')), {map: MAP_ID}));
